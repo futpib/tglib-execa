@@ -1,0 +1,25 @@
+{
+  "name": "TODO",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "TODO",
+  "scripts": {
+    "test": "xo && nyc ava"
+  },
+  "homepage": "https://github.com/futpib/TODO",
+  "ava": {
+    "verbose": true
+  },
+  "devDependencies": {
+    "ava": "^2.1.0",
+    "coveralls": "^3.0.4",
+    "eslint-config-xo-overrides": "^1.3.0",
+    "nyc": "^14.1.1",
+    "xo": "^0.24.0"
+  },
+  "xo": {
+    "extends": [
+      "eslint-config-xo-overrides"
+    ]
+  }
+}
