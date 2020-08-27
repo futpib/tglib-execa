@@ -1,12 +1,12 @@
 {
-  "name": "TODO",
+  "name": "tglib-worker",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "TODO",
+  "license": "GPL-3.0-or-later OR MIT",
   "scripts": {
     "test": "xo && nyc ava"
   },
-  "homepage": "https://github.com/futpib/TODO",
+  "homepage": "https://github.com/futpib/tglib-worker",
   "ava": {
     "verbose": true
   },
@@ -14,12 +14,26 @@
     "ava": "^3.12.1",
     "coveralls": "^3.1.0",
     "eslint-config-xo-overrides": "^1.4.0",
+    "invariant": "^2.2.4",
     "nyc": "^15.1.0",
+    "p-retry": "^4.2.0",
+    "sinon": "^9.0.3",
+    "tempy": "^0.6.0",
+    "tglib": "^3.0.5",
     "xo": "^0.33.0"
   },
   "xo": {
     "extends": [
       "eslint-config-xo-overrides"
-    ]
+    ],
+    "rules": {
+      "unicorn/prefer-add-event-listener": "off"
+    }
+  },
+  "peerDependencies": {
+    "tglib": "^3.0.5"
+  },
+  "dependencies": {
+    "tiny-worker": "^2.3.0"
   }
 }
