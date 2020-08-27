@@ -1,5 +1,8 @@
 language: node_js
 node_js:
-  - 'node'
+- node
 after_success:
-  - './node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls'
+- "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls"
+env:
+  global:
+    secure: LeXhLFS5x+fpuimyhkpTWLYHO3OH4V+u5hIO5RhWN6lNnfpsyQI8Pliiniw0p3zp2cbkcWyYFwBeXp5tYiMU/iCoXZm2n6cAg2JFDM467ggO41fdSsBiV/l6lLxAWmsnkgKLbZI09nEfUaT+WK0w+Pn7CxMXlZMsiHNjWdS5LEWCRPNIW+YRGu1NYIGSeBg99JgDYH4R97c4iECfRAnFXkeziUItl22YvMBlGP/ZVJiinMF4VbfXrHCBzrzPj5xUfzdT96Z5i/vRJEACBcFPOQcmzwA4Beyij4c55Bh04bc84m4hMJJ2CD2Hrlc85i07dgt7sQK3VC+VpnbOoG32eOMY3T96zjJF3GpVeyxLKa0maXGWWDOIaxzNrw/Df7VTw4oA6mCBfNbhar2/HVwtHGDge0bqr3aucI5lnDbJchyl9tfUcwVW5DsSMxSBhz2VIS+56SCQqFY7K7vFUufaSV5vGV2Un1FceXH3iNJXJ8akQtHOBArKny1Jwgm/2exjFu6MXm/vs6uAZ60WiNoYriQptJlJ5GdAUg4sR40S6MQY/1Taw9eC4pEz8aCM4SNEVQKdZdJjpL4SCH7xyVLIqEP9uey8+bwSadCmofAhOoYHleiYPS6moPuDbwCZFJIozciQORhg5OjRvqG8uObfiCfWwXZjP7A8WVpfSmfZJl8=
