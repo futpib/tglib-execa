@@ -1,5 +1,7 @@
 
+const path = require('path');
 const EventEmitter = require('events');
+
 const Worker = require('tiny-worker');
 
 class Client {
@@ -8,7 +10,7 @@ class Client {
 		this.__requestId = 0;
 		this.__resolvers = new Map();
 
-		this.__worker = new Worker('worker.js');
+		this.__worker = new Worker(path.join(__dirname, 'worker.js'));
 		this.__worker.onmessage = this.__onWorkerMessage.bind(this);
 		this.__worker.onerror = this.__onWorkerError.bind(this);
 		this.__worker.postMessage({

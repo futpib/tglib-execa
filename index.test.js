@@ -34,6 +34,8 @@ test.afterEach.always(async t => {
 test('Client', async t => {
 	t.timeout(10000);
 
+	process.chdir(tempy.directory());
+
 	const client = new Client({
 		apiHash: API_HASH,
 		apiId: API_ID,
