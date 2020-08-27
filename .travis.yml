@@ -1,6 +1,12 @@
 language: node_js
+dist: bionic
 node_js:
 - 12
+before_install:
+- sudo apt-get -y install libssl1.1
+- wget https://github.com/ForNeVeR/tdlib.native/releases/download/v1.6.0/tdlib.linux.zip
+- sudo unzip tdlib.linux.zip -d /usr/lib/
+- sudo chmod a+rw /usr/lib/libtdjson.so
 after_success:
 - "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls"
 env:
