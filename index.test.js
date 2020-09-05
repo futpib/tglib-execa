@@ -31,7 +31,29 @@ test.afterEach.always(async t => {
 	}
 });
 
-test('Client', async t => {
+test('Client init error', async t => {
+	const client = new Client({
+		apiHash: API_HASH,
+		apiId: API_ID,
+
+		appDir: tempy.directory(),
+		binaryPath: 'BROKEN BINARY PATH',
+	});
+
+	await t.throwsAsync(new Promise((resolve, reject) => {
+		client.registerCallback('unhandledRejection', reject);
+	}), {
+		message: /BROKEN BINARY PATH/,
+	});
+
+	await t.throwsAsync(client.fetch({
+		'@type': 'getMe',
+	}), {
+		message: 'Client is not created',
+	});
+});
+
+test('Client api calls', async t => {
 	t.timeout(10000);
 
 	process.chdir(tempy.directory());

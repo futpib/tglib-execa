@@ -11,6 +11,7 @@ class Client {
 		this.__resolvers = new Map();
 
 		this.__childProcess = execa('node', [ path.join(__dirname, 'worker.js') ], {
+			serialization: 'advanced',
 			stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
 		});
 		this.__childProcess.on('message', this.__onWorkerMessage.bind(this));
@@ -32,6 +33,23 @@ class Client {
 			}
 
 			this.__resolvers.delete(requestId);
+
+			return;
+		}
+
+		if (type === '__unhandledRejection') {
+			const listeners = this.__events.listeners('unhandledRejection');
+
+			if (listeners.length === 0) {
+				console.warn(
+					'An unhandled rejection occured in tglib subprocess:', error, '.',
+					'Will rethrow it. Fix it or `registerCallback` for `\'unhandledRejection\'` to handle it gracefully.',
+				);
+
+				throw error;
+			}
+
+			this.__events.emit('unhandledRejection', error);
 
 			return;
 		}

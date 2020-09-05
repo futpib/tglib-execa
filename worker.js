@@ -78,3 +78,10 @@ process.on('message', ({ type, payload, meta }) => {
 
 	handler[type](payload, meta);
 });
+
+process.on('unhandledRejection', error => {
+	process.send({
+		type: '__unhandledRejection',
+		error,
+	});
+});
