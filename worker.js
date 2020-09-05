@@ -1,5 +1,3 @@
-/* global self */
-
 const {
 	Client,
 } = require('tglib');
@@ -12,7 +10,7 @@ const handler = {
 			'td:update',
 			'td:error',
 		].forEach(type => this._client.registerCallback(type, payload => {
-			self.postMessage({
+			process.send({
 				type,
 				payload,
 			});
@@ -25,7 +23,7 @@ const handler = {
 			const requestId = this._requestId;
 			this._requestId++;
 
-			self.postMessage({
+			process.send({
 				type: 'td:getInput',
 				payload,
 				meta: { requestId },
@@ -39,13 +37,13 @@ const handler = {
 
 	__handleMethodCall(method, query, meta) {
 		this._client[method](query).then(payload => {
-			self.postMessage({
+			process.send({
 				type: '__response',
 				payload,
 				meta,
 			});
 		}, error => {
-			self.postMessage({
+			process.send({
 				type: '__response',
 				error,
 				meta,
@@ -66,7 +64,7 @@ const handler = {
 	},
 };
 
-self.onmessage = ({ data: { type, payload, meta } }) => {
+process.on('message', ({ type, payload, meta }) => {
 	if (type === 'td:getInput') {
 		const { requestId } = meta;
 		const { resolve } = handler._resolvers.get(requestId);
@@ -79,7 +77,4 @@ self.onmessage = ({ data: { type, payload, meta } }) => {
 	}
 
 	handler[type](payload, meta);
-};
-
-process.on('uncaughtException', error => self.onerror(error));
-process.on('unhandledRejection', error => self.onerror(error));
+});

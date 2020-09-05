@@ -1,8 +1,8 @@
-# tglib-worker
+# tglib-execa
 
-> [`tglib`](https://github.com/nodegin/tglib) wrapped in [`tiny-worker`](https://github.com/avoidwork/tiny-worker)
+> [`tglib`](https://github.com/nodegin/tglib) wrapped in [`execa`](https://github.com/sindresorhus/execa)
 
-[![Build Status](https://travis-ci.org/futpib/tglib-worker.svg?branch=master)](https://travis-ci.org/futpib/tglib-worker) [![Coverage Status](https://coveralls.io/repos/github/futpib/tglib-worker/badge.svg?branch=master)](https://coveralls.io/github/futpib/tglib-worker?branch=master)
+[![Build Status](https://travis-ci.org/futpib/tglib-execa.svg?branch=master)](https://travis-ci.org/futpib/tglib-execa) [![Coverage Status](https://coveralls.io/repos/github/futpib/tglib-execa/badge.svg?branch=master)](https://coveralls.io/github/futpib/tglib-execa?branch=master)
 
 ## Motivation
 
@@ -15,5 +15,5 @@ Use this exactly as you would use [`tglib`](https://github.com/nodegin/tglib). W
 ## Install
 
 ```
-yarn add tglib tglib-worker
+yarn add tglib tglib-execa
 ```

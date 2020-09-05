@@ -2,7 +2,7 @@
 const path = require('path');
 const EventEmitter = require('events');
 
-const Worker = require('tiny-worker');
+const execa = require('execa');
 
 class Client {
 	constructor(options) {
@@ -10,16 +10,17 @@ class Client {
 		this.__requestId = 0;
 		this.__resolvers = new Map();
 
-		this.__worker = new Worker(path.join(__dirname, 'worker.js'));
-		this.__worker.onmessage = this.__onWorkerMessage.bind(this);
-		this.__worker.onerror = this.__onWorkerError.bind(this);
-		this.__worker.postMessage({
+		this.__childProcess = execa('node', [ path.join(__dirname, 'worker.js') ], {
+			stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
+		});
+		this.__childProcess.on('message', this.__onWorkerMessage.bind(this));
+		this.__childProcess.send({
 			type: '__init',
 			payload: options,
 		});
 	}
 
-	__onWorkerMessage({ data: { type, payload, error, meta } }) {
+	__onWorkerMessage({ type, payload, error, meta }) {
 		if (type === '__response') {
 			const { requestId } = meta;
 			const { resolve, reject } = this.__resolvers.get(requestId);
@@ -40,7 +41,7 @@ class Client {
 
 			if (result && result.then) {
 				result.then(payload => {
-					this.__worker.postMessage({
+					this.__childProcess.send({
 						type,
 						payload,
 						meta,
@@ -67,7 +68,7 @@ class Client {
 	__request(type, payload) {
 		const requestId = this.__nextRequestId();
 
-		this.__worker.postMessage({
+		this.__childProcess.send({
 			type,
 			payload,
 			meta: { requestId },
@@ -77,7 +78,7 @@ class Client {
 	}
 
 	_destroy() {
-		return this.__worker.terminate();
+		return this.__childProcess.cancel();
 	}
 
 	_send(payload) {

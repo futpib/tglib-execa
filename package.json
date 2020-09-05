@@ -1,12 +1,12 @@
 {
-  "name": "tglib-worker",
+  "name": "tglib-execa",
   "version": "1.0.3",
   "main": "index.js",
   "license": "GPL-3.0-or-later OR MIT",
   "scripts": {
     "test": "xo && nyc ava"
   },
-  "homepage": "https://github.com/futpib/tglib-worker",
+  "homepage": "https://github.com/futpib/tglib-execa",
   "ava": {
     "verbose": true
   },
@@ -34,6 +34,6 @@
     "tglib": "^3.0.5"
   },
   "dependencies": {
-    "tiny-worker": "^2.3.0"
+    "execa": "^4.0.3"
   }
 }
