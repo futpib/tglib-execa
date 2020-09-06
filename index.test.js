@@ -19,9 +19,25 @@ invariant(API_HASH, 'API_HASH is required');
 invariant(API_ID, 'API_ID is required');
 invariant(BOT_TOKEN, 'BOT_TOKEN is required');
 
+const BINARY_PATH = '/usr/lib/libtdjson.so';
+
 const delay = ms => new Promise(resolve => {
 	setTimeout(resolve, ms);
 });
+
+const createGetInput = t => async ({ string }) => {
+	await delay(100 * Math.random());
+
+	if (string === 'tglib.input.AuthorizationType') {
+		return 'bot';
+	}
+
+	if (string === 'tglib.input.AuthorizationValue') {
+		return BOT_TOKEN;
+	}
+
+	t.fail(string);
+};
 
 test.afterEach.always(async t => {
 	const { client } = t.context;
@@ -40,9 +56,7 @@ test('Client init error', async t => {
 		binaryPath: 'BROKEN BINARY PATH',
 	});
 
-	await t.throwsAsync(new Promise((resolve, reject) => {
-		client.registerCallback('unhandledRejection', reject);
-	}), {
+	await t.throwsAsync(client.ready, {
 		message: /BROKEN BINARY PATH/,
 	});
 
@@ -52,6 +66,31 @@ test('Client init error', async t => {
 		message: 'Client is not created',
 	});
 });
+
+test('Client uncaughtException', async t => {
+	const client = new Client({
+		apiHash: API_HASH,
+		apiId: API_ID,
+
+		appDir: tempy.directory(),
+		binaryPath: BINARY_PATH,
+	});
+
+	const uncaughtExceptionPromise = t.throwsAsync(new Promise((resolve, reject) => {
+		client.registerCallback('uncaughtException', reject);
+	}), {
+		message: /Cannot destructure property/,
+	});
+
+	// Simulate unhandled error inside the worker process
+	client.__childProcess.send({
+		type: 'td:getInput',
+	});
+
+	await uncaughtExceptionPromise;
+});
+
+test.todo('Client unhandledRejection');
 
 test('Client api calls', async t => {
 	t.timeout(10000);
@@ -63,7 +102,7 @@ test('Client api calls', async t => {
 		apiId: API_ID,
 
 		appDir: tempy.directory(),
-		binaryPath: '/usr/lib/libtdjson.so',
+		binaryPath: BINARY_PATH,
 	});
 
 	Object.assign(t.context, {
@@ -84,24 +123,14 @@ test('Client api calls', async t => {
 		t.fail(error);
 	});
 
-	client.registerCallback('td:getInput', async ({ string }) => {
-		await delay(100 * Math.random());
+	client.registerCallback('td:getInput', createGetInput(t));
 
-		if (string === 'tglib.input.AuthorizationType') {
-			return 'bot';
-		}
+	await client.ready;
 
-		if (string === 'tglib.input.AuthorizationValue') {
-			return BOT_TOKEN;
-		}
-
-		t.fail(string);
-	});
-
-	await updateHappened({
+	t.true(updateSpy.calledWithMatch(sinon.match({
 		'@type': 'updateConnectionState',
 		state: { '@type': 'connectionStateReady' },
-	});
+	})));
 
 	t.true(updateSpy.calledWithMatch(sinon.match({
 		'@type': 'updateOption',

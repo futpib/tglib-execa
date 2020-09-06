@@ -6,6 +6,16 @@ const handler = {
 	__init(options) {
 		this._client = new Client(options);
 
+		this._client.ready.then(
+			() => process.send({
+				type: '__resolveReady',
+			}),
+			error => process.send({
+				type: '__rejectReady',
+				error,
+			}),
+		);
+
 		[
 			'td:update',
 			'td:error',
@@ -79,9 +89,18 @@ process.on('message', ({ type, payload, meta }) => {
 	handler[type](payload, meta);
 });
 
+process.on('uncaughtException', error => {
+	process.send({
+		type: '__uncaughtException',
+		error,
+	});
+	process.disconnect();
+});
+
 process.on('unhandledRejection', error => {
 	process.send({
 		type: '__unhandledRejection',
 		error,
 	});
+	process.disconnect();
 });

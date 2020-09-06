@@ -10,18 +10,50 @@ class Client {
 		this.__requestId = 0;
 		this.__resolvers = new Map();
 
-		this.__childProcess = execa('node', [ path.join(__dirname, 'worker.js') ], {
+		const {
+			execa: {
+				nodeArguments: execaNodeArguments = [],
+				workerArguments: execaWorkerArguments = [],
+				options: execaOptions = {},
+			} = {},
+			...tglibOptions
+		} = options;
+
+		this.__childProcess = execa('node', [
+			...execaNodeArguments,
+			path.join(__dirname, 'worker.js'),
+			...execaWorkerArguments,
+		], {
 			serialization: 'advanced',
 			stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
+			...execaOptions,
 		});
 		this.__childProcess.on('message', this.__onWorkerMessage.bind(this));
+
+		this.ready = new Promise((resolve, reject) => {
+			this.__resolveReady = resolve;
+			this.__rejectReady = reject;
+		});
+
 		this.__childProcess.send({
 			type: '__init',
-			payload: options,
+			payload: tglibOptions,
 		});
 	}
 
 	__onWorkerMessage({ type, payload, error, meta }) {
+		if (type === '__resolveReady') {
+			this.__resolveReady();
+
+			return;
+		}
+
+		if (type === '__rejectReady') {
+			this.__rejectReady(error);
+
+			return;
+		}
+
 		if (type === '__response') {
 			const { requestId } = meta;
 			const { resolve, reject } = this.__resolvers.get(requestId);
@@ -37,13 +69,30 @@ class Client {
 			return;
 		}
 
+		if (type === '__uncaughtException') {
+			const listeners = this.__events.listeners('uncaughtException');
+
+			if (listeners.length === 0) {
+				console.warn(
+					'An unhandled rejection occured in tglib subprocess:', error,
+					'\nWill rethrow it. Fix it, report it on GitHub, or `registerCallback` for `\'uncaughtException\'` to handle it gracefully.',
+				);
+
+				throw error;
+			}
+
+			this.__events.emit('uncaughtException', error);
+
+			return;
+		}
+
 		if (type === '__unhandledRejection') {
 			const listeners = this.__events.listeners('unhandledRejection');
 
 			if (listeners.length === 0) {
 				console.warn(
 					'An unhandled rejection occured in tglib subprocess:', error,
-					'\nWill rethrow it. Fix it or `registerCallback` for `\'unhandledRejection\'` to handle it gracefully.',
+					'\nWill rethrow it. Fix it, report it on GitHub, or `registerCallback` for `\'unhandledRejection\'` to handle it gracefully.',
 				);
 
 				throw error;
