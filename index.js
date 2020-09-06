@@ -69,10 +69,6 @@ class Client {
 		});
 	}
 
-	__onWorkerError(error) {
-		throw error;
-	}
-
 	__nextRequestId() {
 		return this.__requestId++;
 	}
