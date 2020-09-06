@@ -42,8 +42,8 @@ class Client {
 
 			if (listeners.length === 0) {
 				console.warn(
-					'An unhandled rejection occured in tglib subprocess:', error, '.',
-					'Will rethrow it. Fix it or `registerCallback` for `\'unhandledRejection\'` to handle it gracefully.',
+					'An unhandled rejection occured in tglib subprocess:', error,
+					'\nWill rethrow it. Fix it or `registerCallback` for `\'unhandledRejection\'` to handle it gracefully.',
 				);
 
 				throw error;
