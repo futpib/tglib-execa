@@ -19,6 +19,7 @@ invariant(API_HASH, 'API_HASH is required');
 invariant(API_ID, 'API_ID is required');
 invariant(BOT_TOKEN, 'BOT_TOKEN is required');
 
+const TGLIB_MODULE_NAME = '@futpib/tglib';
 const BINARY_PATH = '/usr/lib/libtdjson.so';
 
 const delay = ms => new Promise(resolve => {
@@ -52,6 +53,7 @@ test('Client init error', async t => {
 		apiHash: API_HASH,
 		apiId: API_ID,
 
+		tglibModuleName: TGLIB_MODULE_NAME,
 		appDir: tempy.directory(),
 		binaryPath: 'BROKEN BINARY PATH',
 	});
@@ -72,6 +74,7 @@ test('Client uncaughtException', async t => {
 		apiHash: API_HASH,
 		apiId: API_ID,
 
+		tglibModuleName: TGLIB_MODULE_NAME,
 		appDir: tempy.directory(),
 		binaryPath: BINARY_PATH,
 	});
@@ -92,7 +95,7 @@ test('Client uncaughtException', async t => {
 
 test.todo('Client unhandledRejection');
 
-test('Client api calls', async t => {
+const apiCallsTestMacro = async (t, tglibModuleName) => {
 	t.timeout(10000);
 
 	process.chdir(tempy.directory());
@@ -101,6 +104,7 @@ test('Client api calls', async t => {
 		apiHash: API_HASH,
 		apiId: API_ID,
 
+		tglibModuleName,
 		appDir: tempy.directory(),
 		binaryPath: BINARY_PATH,
 	});
@@ -170,4 +174,9 @@ test('Client api calls', async t => {
 			'@type': 'userTypeBot',
 		},
 	});
-});
+};
+
+apiCallsTestMacro.title = (providedTitle, tglibModuleName) => [ providedTitle, tglibModuleName ].join(' ');
+
+test('Client api calls', apiCallsTestMacro, undefined);
+test('Client api calls', apiCallsTestMacro, TGLIB_MODULE_NAME);

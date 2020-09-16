@@ -1,9 +1,7 @@
-const {
-	Client,
-} = require('tglib');
-
 const handler = {
-	__init(options) {
+	__init({ tglibModuleName = 'tglib', ...options }) {
+		const { Client } = require(tglibModuleName);
+
 		this._client = new Client(options);
 
 		this._client.ready.then(
