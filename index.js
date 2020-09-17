@@ -74,7 +74,7 @@ class Client {
 
 			if (listeners.length === 0) {
 				console.warn(
-					'An unhandled rejection occured in tglib subprocess:', error,
+					'An uncaught exception occured in tglib subprocess:', error,
 					'\nWill rethrow it. Fix it, report it on GitHub, or `registerCallback` for `\'uncaughtException\'` to handle it gracefully.',
 				);
 
