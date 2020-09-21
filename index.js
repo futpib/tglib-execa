@@ -2,6 +2,8 @@
 const path = require('path');
 const EventEmitter = require('events');
 
+const { deserializeError } = require('serialize-error');
+
 const execa = require('execa');
 
 class Client {
@@ -24,7 +26,6 @@ class Client {
 			path.join(__dirname, 'worker.js'),
 			...execaWorkerArguments,
 		], {
-			serialization: 'advanced',
 			stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
 			...execaOptions,
 		});
@@ -42,6 +43,10 @@ class Client {
 	}
 
 	__onWorkerMessage({ type, payload, error, meta }) {
+		if (error) {
+			error = deserializeError(error);
+		}
+
 		if (type === '__resolveReady') {
 			this.__resolveReady();
 

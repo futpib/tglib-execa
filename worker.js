@@ -1,3 +1,6 @@
+
+const { serializeError } = require('serialize-error');
+
 const handler = {
 	__init({ tglibModuleName = 'tglib', ...options }) {
 		const { Client } = require(tglibModuleName);
@@ -10,7 +13,7 @@ const handler = {
 			}),
 			error => process.send({
 				type: '__rejectReady',
-				error,
+				error: serializeError(error),
 			}),
 		);
 
@@ -53,7 +56,7 @@ const handler = {
 		}, error => {
 			process.send({
 				type: '__response',
-				error,
+				error: serializeError(error),
 				meta,
 			});
 		});
@@ -90,7 +93,7 @@ process.on('message', ({ type, payload, meta }) => {
 process.on('uncaughtException', error => {
 	process.send({
 		type: '__uncaughtException',
-		error,
+		error: serializeError(error),
 	});
 	process.disconnect();
 });
@@ -98,7 +101,7 @@ process.on('uncaughtException', error => {
 process.on('unhandledRejection', error => {
 	process.send({
 		type: '__unhandledRejection',
-		error,
+		error: serializeError(error),
 	});
 	process.disconnect();
 });
