@@ -1,6 +1,6 @@
 {
   "name": "tglib-execa",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "index.js",
   "license": "GPL-3.0-or-later OR MIT",
   "scripts": {
